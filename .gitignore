@@ -1,0 +1,120 @@
+# =============================================================
+# agnosticBrain — .gitignore
+# Estrategia: ignorar TODO el vault por defecto.
+# Solo se trackean los archivos del sistema BrainAI LLM OS.
+# Para trackear un archivo nuevo: git add -f <archivo>
+# =============================================================
+
+# IGNORAR TODO (todo el vault de Obsidian)
+*
+
+# -----------------------------------------------------------
+# RAÍZ — archivos del sistema
+# -----------------------------------------------------------
+!.gitignore
+!CLAUDE.md
+!AGENTS.md
+!README.md
+!MANUAL.md
+
+# -----------------------------------------------------------
+# .cursor/ — solo el reforzador del kernel (superficie Cursor)
+# El resto de .cursor/ (config local, otras rules) NO se trackea
+# -----------------------------------------------------------
+!.cursor/
+.cursor/*
+!.cursor/rules/
+.cursor/rules/*
+!.cursor/rules/00-brainai-kernel.mdc
+
+# -----------------------------------------------------------
+# SKILLS/ — protocolos del sistema + insumos descubribles
+# Nuevos skills NO se trackean automáticamente: agregar su !regla aquí
+# -----------------------------------------------------------
+!SKILLS/
+SKILLS/*
+!SKILLS/ingest.md
+!SKILLS/query.md
+!SKILLS/lint.md
+!SKILLS/archive.md
+!SKILLS/curate.md
+!SKILLS/propose.md
+!SKILLS/status.md
+!SKILLS/format.md
+!SKILLS/gaps.md
+!SKILLS/gaps-ejemplo.md
+!SKILLS/compose.md
+
+# -----------------------------------------------------------
+# wiki/ — índice (mapa estructural) + registro de brechas (_gaps)
+# El log de actividad y el contenido compilado NO se trackean
+# (wiki/log.md es un registro local, no parte del sistema)
+# -----------------------------------------------------------
+!wiki/
+wiki/*
+!wiki/index.md
+!wiki/_gaps.md
+!wiki/_proposed/
+wiki/_proposed/*
+!wiki/_proposed/README.md
+
+# -----------------------------------------------------------
+# raw/ — solo README explicativo
+# Las fuentes NO se trackean
+# -----------------------------------------------------------
+!raw/
+raw/*
+!raw/README.md
+
+# -----------------------------------------------------------
+# curated/ — solo README explicativo
+# Las notas curadas NO se trackean aquí
+# -----------------------------------------------------------
+!curated/
+curated/*
+!curated/README.md
+
+# -----------------------------------------------------------
+# archivo/ — solo README explicativo
+# -----------------------------------------------------------
+!archivo/
+archivo/*
+!archivo/README.md
+
+# -----------------------------------------------------------
+# Templates/ — plantillas de captura (Templater), parte del cerebro
+# Se trackea toda la carpeta y su contenido (presente y futuro)
+# -----------------------------------------------------------
+!Templates/
+!Templates/**
+
+# -----------------------------------------------------------
+# scripts/ — utilidades mecánicas read-only del sistema BrainAI
+# Nuevos scripts NO se trackean automáticamente: agregar su !regla aquí
+# -----------------------------------------------------------
+!scripts/
+scripts/*
+!scripts/verify_citations.sh
+!scripts/graph_health.sh
+!scripts/pending_sources.sh
+!scripts/stale_sources.sh
+!scripts/source_hash.sh
+!scripts/skipped_sources.sh
+!scripts/resurface.sh
+!scripts/verify_wikilinks.sh
+!scripts/entry_orphans.sh
+!scripts/export_okf.sh
+!scripts/coverage_check.sh
+
+# -----------------------------------------------------------
+# .obsidian/ — solo los plugins propios del sistema BrainAI (config local,
+# plugins de la comunidad y demás NO se trackean)
+# -----------------------------------------------------------
+!.obsidian/
+.obsidian/*
+
+# -----------------------------------------------------------
+# PARA AGREGAR UN ARCHIVO MANUALMENTE:
+# git add -f <ruta/archivo>
+# git commit -m "track: <descripción>"
+# -----------------------------------------------------------

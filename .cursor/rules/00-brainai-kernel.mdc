@@ -1,0 +1,23 @@
+---
+description: BrainAI kernel — leer AGENTS.md (fuente de verdad) antes de cualquier operación sobre el vault
+alwaysApply: true
+---
+
+# BrainAI · Kernel (puntero para Cursor)
+
+La **fuente de verdad** operativa de este repositorio es `AGENTS.md` en la raíz.
+**Leé `AGENTS.md` completo antes de cualquier operación** (ingest, query, lint, curate, archive, propose, status, gaps).
+El kernel no se duplica aquí para evitar divergencia: este archivo solo apunta a él.
+
+## No-negociables (salvaguarda mínima)
+
+- `curated/` y `raw/` son **SOLO LECTURA**: nunca escribir, modificar ni renombrar. (Única excepción acotada del kernel: `raw/feedback/` al absorber brechas con confirmación explícita del humano — ver `AGENTS.md` REGLA 2 / `/gaps`.)
+- `archivo/` es **append-only**: solo mover adentro, y únicamente por orden explícita del humano.
+- Antes de cualquier `query` / `ingest`: leer `wiki/index.md` completo.
+- `wiki/log.md` es **append-only**.
+- `wiki/_gaps.md` es el registro de brechas: el agente emite/administra `status`; el humano solo escribe `Respuesta del humano` (REGLA 7).
+- Antes de crear o editar cualquier nota: leer `SKILLS/format.md` (formato Obsidian).
+- **Atomicidad y enlazamiento (REGLA 8):** una nota = un solo átomo; extraer entidades/conceptos como nodos `entity`/`concept` y enlazarlos (no describirlos dentro de guías); crear el átomo nuevo en vez de engordar la nota del dominio; cada nota con ≥2 enlaces tipados + registrada en su MOC; nada de notas-cubo (>12 fuentes raw o >150 líneas → split + MOC).
+- Al escribir una nota `wiki/`: `last_agent: cursor`.
+
+Referencia completa del kernel: @AGENTS.md
