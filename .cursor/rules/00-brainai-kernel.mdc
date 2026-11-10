@@ -6,7 +6,7 @@ alwaysApply: true
 # BrainAI · Kernel (puntero para Cursor)
 
 La **fuente de verdad** operativa de este repositorio es `AGENTS.md` en la raíz.
-**Leé `AGENTS.md` completo antes de cualquier operación** (ingest, query, lint, curate, archive, propose, status, gaps).
+**Leé `AGENTS.md` completo antes de cualquier operación** (ingest, query, lint, curate, archive, propose, accept-proposal, status, gaps).
 El kernel no se duplica aquí para evitar divergencia: este archivo solo apunta a él.
 
 ## No-negociables (salvaguarda mínima)

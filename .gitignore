@@ -16,6 +16,9 @@
 !AGENTS.md
 !README.md
 !MANUAL.md
+!EVALUACION.md
+!eval/
+!eval/**
 
 # -----------------------------------------------------------
 # .cursor/ — solo el reforzador del kernel (superficie Cursor)
@@ -44,6 +47,7 @@ SKILLS/*
 !SKILLS/gaps.md
 !SKILLS/gaps-ejemplo.md
 !SKILLS/compose.md
+!SKILLS/accept-proposal.md
 
 # -----------------------------------------------------------
 # wiki/ — índice (mapa estructural) + registro de brechas (_gaps)

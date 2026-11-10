@@ -556,11 +556,13 @@ Anti-fatiga: si un ingest produciría > 3 brechas, emitir solo las 3 de mayor im
 Protocolo completo: SKILLS/gaps.md (§Emisión).
 ```
 
-### Paso 4 — Actualizar index
+### Paso 4 — Actualizar el MOC (y el index solo si corresponde)
 ```
 Para cada página wiki/ creada o modificada:
-  → Agregar o actualizar entrada en wiki/index.md
-  → Formato: - [[wiki/nombre-nota]] — descripción en una línea
+  → Registrar/actualizar el átomo en el MOC de su dominio:
+    - [[wiki/nombre-nota]] — descripción en una línea
+  → Si el dominio aún no tiene MOC y ya hay ≥3 átomos, crearlo.
+  → En wiki/index.md solo se agrega el MOC (o la nota en "Notas sin MOC" si es transitorio).
   → Actualizar estadísticas (conteo de notas activas y de brechas abiertas en _gaps)
 ```
 

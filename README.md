@@ -46,6 +46,7 @@ BrainAI/
 │
 ├── Templates/        ← Plantillas de captura (Templater). Fuera del pipeline raw/.
 │
+├── scripts/          ← Chequeos mecánicos read-only (links, citas, grafo, staleness)
 ├── AGENTS.md         ← Kernel canónico multi-agente — FUENTE DE VERDAD (Codex, Cursor, Claude)
 ├── CLAUDE.md         ← Puntero a AGENTS.md para Claude Code (@AGENTS.md)
 └── README.md         ← Este archivo
@@ -63,7 +64,7 @@ BrainAI/
 
 ---
 
-> **Fuente de verdad única:** el kernel (reglas, operaciones, schemas, políticas) vive solo en `AGENTS.md`. `CLAUDE.md` lo importa con `@AGENTS.md`; Codex y Cursor lo leen nativo. Editar el kernel = editar `AGENTS.md`, nunca duplicarlo.
+> **Fuente de verdad única:** el contrato (reglas, ownership, schema, políticas y router de operaciones) vive en `AGENTS.md`; los protocolos detallados, en `SKILLS/`. `CLAUDE.md` importa `@AGENTS.md`; Codex y Cursor lo leen nativo. Regla nueva → `AGENTS.md`; paso nuevo → el SKILL. Nunca duplicar.
 
 ## Ownership — La regla de oro
 
@@ -79,7 +80,7 @@ BrainAI/
 
 ---
 
-## Las 9 operaciones
+## Las 10 operaciones
 
 | Operación | Cómo invocar | Qué hace |
 |---|---|---|
@@ -89,6 +90,7 @@ BrainAI/
 | `/archive` | `/archive [nota]` | Mueve nota a `archivo/` — solo por orden explícita |
 | `/curate` | `/curate [nota]` | Congela nota de `wiki/` a `curated/` |
 | `/propose` | Auto durante ingest | Crea propuesta de cambio para nota curada |
+| `/accept-proposal` | `/accept-proposal [archivo]` | Aplica una propuesta aprobada: diff, guardia de hash, archivo y log |
 | `/status` | `/status` | Dashboard: conteo de notas, log reciente, propuestas pendientes |
 | `/gaps` | `/gaps` | Absorbe brechas respondidas (feedback loop) |
 | `/compose` | `/compose [--hasta-limpio]` | **Composición autónoma continua**: mejora el grafo en loop por horas hasta punto fijo |
@@ -123,9 +125,26 @@ BrainAI/
 
 ## Por qué `wiki/_proposed/`
 
-Cuando el LLM procesa nuevo conocimiento que debería actualizar una nota en `curated/`, no puede tocarla. En cambio, crea una propuesta en `wiki/_proposed/` con el diff exacto. El humano revisa periódicamente, aprueba los que corresponde, y aplica manualmente los cambios a `curated/`.
+Cuando el LLM procesa nuevo conocimiento que debería actualizar una nota en `curated/`, no puede tocarla. En cambio, crea una propuesta en `wiki/_proposed/` con el diff exacto. El humano revisa, aprueba, y el agente aplica el delta **leyendo y comparando**, no con un script de merge:
 
-Es el mecanismo que cierra el loop de aprendizaje sin sacrificar la protección del conocimiento curado.
+1. El agente lista la bandeja y lee el frontmatter de cada propuesta (`target_note`, fecha, `target_sha256`).
+2. Construye el antes/después de la sección afectada y lo muestra.
+3. Verifica el hash con `sha256sum` (o `shasum -a 256`): si la nota cambió, aborta.
+4. Solo con confirmación explícita, reemplaza la sección, actualiza `last_human_edit`, archiva en `_proposed/archive/`, loguea y actualiza el índice.
+
+Es el mecanismo que cierra el loop de aprendizaje sin sacrificar la protección del conocimiento curado. El protocolo completo vive en `SKILLS/accept-proposal.md`.
+
+## LLM-first, no tooling-first
+
+| Pieza | Cómo se resuelve |
+|---|---|
+| Cierre de propuestas | El LLM lee, compara y aplica; `diff` + `sha256sum` + confirmación humana. |
+| `/lint` mecánico | Los scripts que ya existen: `verify_wikilinks.sh`, `verify_citations.sh`, `graph_health.sh`, `coverage_check.sh`. |
+| Invariantes de `curated/` y cobertura del índice | El LLM las verifica leyendo; no hay linter propio. |
+| Hard-lock de escritura | El sandbox del agente (sin write sobre `curated/`) o permisos del SO. |
+| Costo | El juicio semántico se acota a candidatas; `/lint --full` es explícito. |
+
+> Menos scripts, menos mantenimiento. Solo se agrega un script si el LLM no puede hacer la tarea de forma fiable y barata.
 
 ---
 
@@ -137,9 +156,10 @@ Es el mecanismo que cierra el loop de aprendizaje sin sacrificar la protección 
 4. **El index es la puerta**: `wiki/index.md` es el cerebro navegable del sistema — un catálogo de MOCs, no una lista plana
 5. **Log como memoria del sistema**: `wiki/log.md` registra todo — el sistema recuerda lo que hizo
 6. **Proponer sobre `curated/`**: el LLM nunca actúa unilateralmente sobre conocimiento humano
-7. **Red de átomos, no archivador** (REGLA 8, kernel v2.2): una nota = un sujeto; entidades y conceptos se extraen como nodos-hub y se enlazan con relaciones tipadas; cada `/ingest` mejora el grafo (más nodos, mejores enlaces, menos centralización) en vez de engordar pocas notas gigantes. El cerebro compone, no acumula.
+7. **Red de átomos, no archivador** (REGLA 8, kernel v2.3): una nota = un sujeto; entidades y conceptos se extraen como nodos-hub y se enlazan con relaciones tipadas; cada `/ingest` mejora el grafo (más nodos, mejores enlaces, menos centralización) en vez de engordar pocas notas gigantes. El cerebro compone, no acumula.
 8. **Fuente única sin generación, no un compilador multi-agente**: a diferencia de [GitHub Spec-Kit](https://github.com/github/spec-kit), que compila un artefacto de comando distinto por cada uno de sus 30+ agentes soportados (un adaptador por agente, con build y riesgo de drift), `AGENTS.md` no genera nada — es autónomo y lo leen sin transformación los 3 agentes reales de este vault. Decisión deliberada: sin argumentos tipados ni decenas de sintaxis que reconciliar, un generador agregaría complejidad para un problema que este vault no tiene.
 9. **Anti-"vibe knowledge" — eje ortogonal al anterior**: "vibe coding" es escribir código confiando en que "se ve bien" sin spec ni verificación; acá el equivalente es prosa que suena compilada sin ser citable. Este SÍ es el eje donde tomamos de Spec-Kit — no su arquitectura de distribución (punto 8), sino sus mecanismos anti-alucinación, adaptados de requisitos de software a notas citadas: checklist de calidad textual (`SKILLS/format.md §17`), cobertura bidireccional gap↔nota (`SKILLS/lint.md §Paso 3.55`), gate de REGLA 8 pre-escritura (`SKILLS/ingest.md §Paso 3.68`) y taxonomía + priorización de ambigüedad (`SKILLS/gaps.md`). Los dos ejes son independientes: se puede tomar uno sin el otro.
+10. **Menos tooling, más criterio** (v2.3): el LLM lee, compara, propone y aplica; los scripts existentes solo cubren lo mecánico (links, citas, grafo, staleness). No hay linter ni merge propios que mantener. La seguridad no es un script: es el sandbox del agente + la confirmación humana.
 
 ---
 

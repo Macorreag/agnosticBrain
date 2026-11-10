@@ -16,12 +16,38 @@
 
 ## Protocolo paso a paso
 
+### Paso 0 — Chequeo mecánico con los scripts existentes
+```
+Correr SIEMPRE primero:
+
+  bash scripts/verify_wikilinks.sh
+  bash scripts/verify_citations.sh
+  bash scripts/graph_health.sh
+  bash scripts/coverage_check.sh
+
+Leer sus salidas. El agente completa a mano lo que no cubren:
+  → frontmatter obligatorio de wiki/ y los invariantes de curated/
+  → cobertura del índice/MOC: toda nota alcanzable desde index.md o su MOC
+  → estadísticas del índice desactualizadas
+  → propuestas: target válido, antigüedad y hash drift
+
+No hay linter propio. No gastar tokens re-validando sintaxis que un script ya resolvió.
+Los scripts son read-only; sus hallazgos se reportan, no se auto-corrigen en curated/.
+```
+
 ### Paso 1 — Inventario
 ```
 Leer wiki/index.md completo.
 Contar: páginas wiki/ activas, curated/, propuestas pendientes en _proposed/, brechas abiertas en _gaps.
 Anotar páginas con status: stale o updated > 90 días.
 ```
+
+> [!important] Alcance semántico por costo (kernel v2.3)
+> El chequeo mecánico es O(todas las notas) y cuesta 0 tokens. El análisis semántico es O(notas leídas)
+> y sí cuesta. **Default:** no leer todas; revisar candidatas — `status: stale`, `updated` > 90 días,
+> `confidence < 0.7`, fan-in excesivo, notas tocadas desde el último `wiki/lint-*.md` y las referidas
+> por propuestas/brechas abiertas. `/lint --full` = recorrer todas (explícito, no default).
+> El reporte declara `Alcance: N/M notas`.
 
 ### Paso 2 — Verificar links
 ```
@@ -160,6 +186,7 @@ Recorrer las brechas del registro:
 ```
 Crear wiki/lint-YYYY-MM-DD.md con:
   - Resumen ejecutivo (tabla de issues por categoría)
+  - Hallazgos de los scripts mecánicos (links, citas, grafo, cobertura) — si los hubo
   - Detalle de cada issue con acción sugerida
   - Lista de propuestas pendientes
   - Acciones que el LLM puede aplicar directamente vs. requieren aprobación del humano

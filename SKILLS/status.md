@@ -58,10 +58,16 @@ Calcular: días desde el último ingest.
 
 ### Paso 3 — Propuestas pendientes
 ```
-Si existen archivos en wiki/_proposed/:
-  → Listar cada uno: nombre, nota curada afectada, fecha de creación
-  → Calcular días pendientes
-  → Marcar las que superan 14 días como ⚠️
+Listar archivos y leer el frontmatter (sin herramienta):
+
+  ls -1 wiki/_proposed/*.md
+
+  → Extraer target_note, created, status y target_sha256.
+  → Ordenar por antigüedad; marcar las que superan 14 días como ⚠️.
+  → Hash drift: si hay target_sha256, comparar con
+    sha256sum curated/<nota>.md (macOS: shasum -a 256). Si no coincide, ⚠️:
+    la nota cambió después de crear la propuesta; regenerarla antes de aplicar.
+  → Las propuestas v1 (texto libre) requieren más cuidado al aplicar.
 ```
 
 ### Paso 4 — Reportar

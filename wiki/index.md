@@ -1,7 +1,7 @@
-# wiki/index.md — Catálogo Maestro
+# wiki/index.md — Catálogo de MOCs
 
 > Punto de entrada obligatorio. Leer completo antes de cualquier query o ingest.
-> Mantenido por el LLM. Actualizar en cada ingest, curate, y archive.
+> Mantenido por el LLM. Actualizar en cada ingest, curate y archive.
 
 ---
 
@@ -19,34 +19,21 @@
 
 ---
 
-## Índice por dominio
+## Mapas de Contenido (moc) — puerta de cada dominio
 
-> [!important] Navegación MOC-first (kernel v2.2 · REGLA 8)
-> Este índice es un **catálogo de Mapas de Contenido (MOC)**, no de notas sueltas. Para consultar un dominio, entrar por su MOC y navegar los enlaces tipados hasta el átomo exacto. Las secciones por tipo de abajo son el inventario plano de respaldo mientras se completa el backfill de MOCs.
+> [!important] Navegación MOC-first (kernel v2.3 · REGLA 8)
+> Este índice es un **catálogo de MOCs**, no de notas sueltas. Cada MOC es la puerta de un
+> dominio: enlaza y ordena sus átomos con una línea de contexto cada uno. El agente entra
+> por el MOC y navega los enlaces tipados hasta el átomo exacto.
 
-### Mapas de Contenido (moc) — puerta de cada dominio
-<!-- Un MOC por dominio activo: enlaza y ordena los átomos del dominio. Formato: - [[wiki/moc-<dominio>]] — alcance del dominio -->
+<!-- Un MOC por dominio activo: - [[wiki/moc-<dominio>]] — alcance del dominio -->
 
-### Entidades (entity)
-<!-- Nodos-hub: apps, servicios, sistemas, personas. Máxima prioridad de extracción (REGLA 8). -->
+---
 
-### Conceptos (concept)
-<!-- Nodos-hub: patrones teóricos, principios, técnicas reutilizables. -->
+## Notas sin MOC (transitorio)
 
-### Patrones (pattern)
-<!-- Patrones de incidentes, soluciones recurrentes, anti-patrones -->
-
-### Guías (guide)
-<!-- How-tos, procedimientos, runbooks -->
-
-### Incidentes (incident)
-<!-- RCAs, post-mortems, análisis de alertas -->
-
-### Comparaciones (comparison)
-<!-- A vs B, trade-offs, decisiones de arquitectura -->
-
-### Síntesis (summary)
-<!-- Síntesis transversal de varios átomos (rara) -->
+> Solo para el cold start o para átomos que todavía no tienen dominio. Si esta sección
+> crece, falta crear el MOC del dominio. Formato: `- [[wiki/nota]] — descripción`.
 
 ---
 
@@ -69,9 +56,9 @@
 
 ## Convenciones del index
 
-- Formato de entrada: `- [[wiki/nombre-nota]] — descripción en una línea`
-- MOC primero: cada dominio entra por `- [[wiki/moc-<dominio>]] — alcance`; el MOC enlaza sus átomos
-- Notas curadas: `- [CURATED] [[curated/nombre-nota]] — descripción`
-- Notas archivadas: ~~`- [[wiki/nombre-nota]]`~~ `[ARCHIVADO YYYY-MM-DD]`
-- El LLM actualiza este archivo y los MOCs afectados en cada ingest, curate, y archive
-- El LLM NO actualiza este archivo durante query ni lint (solo reporta)
+- MOC primero: `- [[wiki/moc-<dominio>]] — alcance`; el MOC enlaza sus átomos.
+- Nota sin MOC: `- [[wiki/nombre-nota]] — descripción` (solo transitorio).
+- Nota curada: `- [CURATED] [[curated/nombre-nota]] — descripción`.
+- Nota archivada: ~~`- [[wiki/nombre-nota]]`~~ `[ARCHIVADO YYYY-MM-DD]`.
+- El LLM actualiza este archivo y los MOCs afectados en cada ingest, curate y archive.
+- El LLM NO actualiza este archivo durante query ni lint (solo reporta).

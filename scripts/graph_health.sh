@@ -11,7 +11,7 @@
 #   bash scripts/graph_health.sh            # reporte legible + DEUDA total
 #   bash scripts/graph_health.sh --score    # una línea, para comparar entre ciclos de /compose
 #
-# Umbrales (kernel v2.2):
+# Umbrales (kernel v2.3):
 #   fan-in excesivo  : >12 fuentes raw distintas  O  >150 líneas
 #   huérfana salida  : 0 enlaces [[wiki/...]] salientes
 #   sub-enlazada     : exactamente 1 enlace saliente (densidad mínima = 2; exento: moc)

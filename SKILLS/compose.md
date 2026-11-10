@@ -2,7 +2,7 @@
 
 > La operación que permite **dejar el cerebro compilando por horas y que mejore en cada ciclo**.
 > No es una pasada única: es un **loop convergente** que reduce la deuda del grafo hasta un punto fijo.
-> Cierra el principio de composición incremental de la REGLA 8 (kernel v2.2).
+> Cierra el principio de composición incremental de la REGLA 8 (kernel v2.3).
 
 ---
 
@@ -83,9 +83,15 @@ El índice DEUDA pondera: `5·notas-cubo + 3·huérfanas + 1·sub-enlazadas + 4�
 
 ### Paso 0 — Presupuesto y baseline
 ```
-Fijar presupuesto: N ciclos, o "--hasta-limpio" (hasta punto fijo), o T minutos.
+Fijar presupuesto: N ciclos, "--hasta-limpio" (punto fijo), T minutos y un tope de costo
+(--max-tokens estimado o --max-minutos). Sin tope de costo, no dejarlo correr horas.
+
 Leer wiki/index.md.
 bash scripts/graph_health.sh --score   → guardar DEUDA inicial del ciclo. Loguear el baseline.
+
+Utilidad (si hay benchmark, EVALUACION.md):
+  Correr 3–5 preguntas conocidas antes/después. Si no hay benchmark, decirlo:
+  DEUDA mide estructura, no calidad de respuesta.
 ```
 
 ### Paso 1 — Cola de ingest (stale + nuevas)
@@ -231,7 +237,8 @@ Dominio con ≥3 átomos y sin moc →
 | **Idempotente** | Re-correr `/compose` sin fuentes nuevas sobre un grafo limpio = no-op. No oscila. |
 | **Monótono** | Nunca empeora una métrica para mejorar otra (regla del invariante). |
 | **No destructivo** | Splits reescriben, no borran. `raw/` intacto → todo recompilable. |
-| **Acotado** | Presupuesto explícito de ciclos/tiempo; ≤3 brechas por ciclo de ingest. |
+| **Acotado** | Presupuesto explícito de ciclos/tiempo/**costo**; ≤3 brechas por ciclo de ingest. |
+| **No Goodhart** | DEUDA es estructural. Sin benchmark, no se declara mejora semántica; con benchmark, se mide recuperación. |
 | **Trazable** | Cada ciclo y cada refactor al log, con la métrica que mejoró. |
 | **Respeta ownership** | Nunca toca `raw/`, `curated/` (→ /propose), `archivo/`. |
 

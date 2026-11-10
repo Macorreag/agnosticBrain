@@ -76,6 +76,7 @@ El cerebro no actúa solo. Vos lo activás con estos comandos:
 | `/lint`                   | Health-check periódico (cada 2-3 semanas)                |
 | `/curate wiki/<nota>`     | Querés congelar una nota como canónica                   |
 | `/archive wiki/<nota>`    | Declarás obsoleta una nota — solo vos podés ordenarlo    |
+| `/accept-proposal <archivo>` | Aprobás una propuesta: ves el diff y se aplica el delta exacto |
 | `/compose --hasta-limpio` | Dejar el cerebro auto-mejorando solo un rato             |
 
 
@@ -134,7 +135,7 @@ Desde ese momento:
 > BrainAI resuelve a propósito la tensión entre velocidad y aprendizaje a favor de la **velocidad de recuperación** — el objetivo del sistema es que consultes rápido cuando lo necesites, no que estudies. Eso significa que compilar `wiki/` no te exige escribir nada: el LLM sintetiza y vos accedés. Pero eso también resigna el "generation effect" (aprender reformulando con tus propias palabras) que es el corazón de Zettelkasten. La única palanca que se activa para recuperarlo, sin frenar el resto del flujo, es `/curate`: como es un conjunto chico y deliberado — las notas que más vas a reusar — pedirte una línea propia ahí es barato y de alto valor. El resto de la wiki sigue siendo 100% compilación.
 
 > [!info] El contrapeso de curar: `/archive`
-> Cuando una nota de `wiki/` queda obsoleta (no curada — para eso primero `/uncurate`), decís `/archive wiki/<nota> — [razón]` y el agente la mueve a `archivo/`. Es, de las 9 operaciones, la que el kernel más blinda: el agente **nunca** archiva por iniciativa propia (ni durante `/lint` ni `/ingest`) — solo por tu orden explícita.
+> Cuando una nota de `wiki/` queda obsoleta (no curada — para eso primero `/uncurate`), decís `/archive wiki/<nota> — [razón]` y el agente la mueve a `archivo/`. Es, de las 10 operaciones, la que el kernel más blinda: el agente **nunca** archiva por iniciativa propia (ni durante `/lint` ni `/ingest`) — solo por tu orden explícita.
 
 ---
 
@@ -152,7 +153,24 @@ Esa propuesta tiene:
 - El cambio propuesto (qué agregaría o modificaría)
 - La justificación (de dónde viene la info nueva)
 
-**Vos decidís:** si la info es correcta y vale incorporarla, ejecutás `/curate` sobre la nota curada con los cambios. Si no, borrás la propuesta.
+**Vos decidís.** El flujo es conversacional:
+
+1. **Ver la bandeja:** pedile al agente "mostrame las propuestas pendientes". Lee
+   `wiki/_proposed/`, ordena por antigüedad y te muestra target, fecha y si el hash cambió.
+2. **Ver el diff:** "mostrame el diff de esta propuesta". El agente lee la nota curada y
+   construye el antes/después exacto; no escribe nada.
+3. **Verificar que la nota no cambió:** si la propuesta trae `target_sha256`, el agente lo
+   compara con `sha256sum curated/<nota>.md` (macOS: `shasum -a 256`). Si no coincide, la
+   propuesta quedó vieja: se regenera, no se aplica.
+4. **Aprobar:** "aplica la propuesta". El agente reemplaza solo la sección aprobada,
+   actualiza `last_human_edit`, archiva la propuesta en `_proposed/archive/` con
+   `status: applied`, y registra el cambio en `wiki/log.md`.
+
+No hay script de merge: el agente lee, compara y aplica con tu confirmación. Si no querés
+incorporarla, borrás la propuesta (o le pedís al agente que la descarte).
+
+> Nunca se aplica nada sin que hayas visto el diff y aprobado. Si el agente tiene dudas
+> de sección o de texto, te pregunta; no adivina.
 
 ---
 
